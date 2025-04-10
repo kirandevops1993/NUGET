@@ -259,16 +259,22 @@ public sealed class AdminController : Controller
 
                         result.Add(CreateFileResult(mediaFile));
                     }
+                    catch (FileStoreFileExistsException ex)
+                    {
+                        _logger.LogWarning(ex, "An error occurred while uploading a media");
+
+                        result.Add(new
+                        {
+                            name = fileName, size = file.Length, folder = path, error = ex.Message,
+                        });
+                    }
                     catch (Exception ex)
                     {
                         _logger.LogError(ex, "An error occurred while uploading a media");
 
                         result.Add(new
                         {
-                            name = fileName,
-                            size = file.Length,
-                            folder = path,
-                            error = ex.Message,
+                            name = fileName, size = file.Length, folder = path, error = ex.Message,
                         });
                     }
                     finally
